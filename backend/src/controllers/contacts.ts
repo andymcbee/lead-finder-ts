@@ -9,13 +9,36 @@ interface reqBodyI {
   website: string;
 }
 
+interface emailDataI {
+  data: {
+      status: string;
+      result: string;
+      flags: [];
+      suggested_correction: string;
+      execution_time: number;
+      email: string;
+  };
+}
+
+/*  /api/v1/contacts/create
+ JSON body example:
+{
+  "fName": "Andrew",
+  "lName": "McBurney",
+  "website": "https://getreviewrobin.com/"
+ 
+} */
 export const addContact = async (req: Request, res: Response) => {
   const reqBody: reqBodyI = req.body;
-  // console.log(reqBody);
 
-  //return root domain + store it at global scope
+  //global vars
+  let validEmailData: emailDataI | boolean = false
 
-  //return possible emails and store it at global scope
+  //res.status(401).json("You can update only your account!");
+  //******if fName is empty, return error
+
+  //******if website is empty, return error
+
 
   const contactData: reqBodyI = {
     fName: reqBody.fName,
@@ -23,11 +46,14 @@ export const addContact = async (req: Request, res: Response) => {
     website: returnRootDomain(reqBody.website)
   };
 
+
+  //******CREATE THE CONTACT HERE.... ASYNC
+
+  
   const emailArray = createPotentialEmailMatchesArray(contactData);
 
   for (let i = 0; i < emailArray.length; i++) {
     const checkEmail = async (email: string) => {
-      console.log(email);
       const validEmailCheckData = await checkEmailValidity(email);
 
       if (validEmailCheckData?.data.result === "valid") {
@@ -35,16 +61,50 @@ export const addContact = async (req: Request, res: Response) => {
       }
     };
 
-    const data = await checkEmail(emailArray[i]);
-    console.log("DATA::::");
-    console.log(data);
-
-    if (data?.data.result === "valid") {
+    const validEmail = await checkEmail(emailArray[i]);
+    //console.log("DATA::::");
+    //console.log(data);
+    
+//refactor this to include CATCH ALL.
+    if (validEmail?.data.result === "valid") {
+      //****** SET THE GLOBAL VARIABLE TO ENSURE THIS GETS PASSED IN THE RESPONSE.
+      //RETURN CONTACT WITH EMAIL
+      console.log(validEmail)
+      validEmailData = validEmail
       break;
     }
   }
 
-  /* 
+ 
+
+
+if(validEmailData){
+  //update the contact
+  //return valid email res + 
+  console.log("VALID EMAIL EXISTS...")
+  return validEmailData
+} else {
+// RETURN CONTACT WITH NO EMAIL
+console.log("No valid email found")
+return "noValidEmail"
+
+}
+
+
+
+};
+
+export const getContacts = async (req: Request, res: Response) => {
+  console.log("GET ALL CONTACTS");
+};
+
+
+
+
+
+
+
+/* 
 for (let i = 0; i < testArr.length; i++) {
   console.log(testArr[i])
 
@@ -112,8 +172,3 @@ const even = (element: string) => {
   createPotentialEmailMatchesArray(contactData);
 
   return res.status(200).json({ message: reqBody }); */
-};
-
-export const getContacts = async (req: Request, res: Response) => {
-  console.log("GET ALL CONTACTS");
-};
