@@ -2,12 +2,16 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import { returnRootDomain } from "../services/returnRootDomain";
 import { createPotentialEmailMatchesArray } from "../services/createPotentialEmailMatchesArray";
 import { checkEmailValidity } from "../services/checkEmailValidity";
+import {pool} from "../db"
+
 
 interface reqBodyI {
   fName: string;
   lName: string;
   website: string;
 }
+
+
 
 interface emailDataI {
   data: {
@@ -20,6 +24,12 @@ interface emailDataI {
   };
 }
 
+interface contactI {
+  fName: string;
+  lName: string;
+  website: string;
+}
+
 /*  /api/v1/contacts/create
  JSON body example:
 {
@@ -29,25 +39,51 @@ interface emailDataI {
  
 } */
 export const addContact = async (req: Request, res: Response) => {
-  const reqBody: reqBodyI = req.body;
+  const {fName, lName, website }:reqBodyI = req.body;
+
+  console.log(fName)
+
+
 
   //global vars
   let validEmailData: emailDataI | boolean = false
 
   //res.status(401).json("You can update only your account!");
   //******if fName is empty, return error
+if(!fName) {
+  return res.status(400).json({"success": false, "message": "First name is a required field."});
+}
+if(!website) {
+  return res.status(400).json({"success": false, "message": "Website is a required field."});
+}
 
-  //******if website is empty, return error
+//var queryText = 'INSERT INTO users(password_hash, email) VALUES($1, $2) RETURNING id'
 
 
-  const contactData: reqBodyI = {
-    fName: reqBody.fName,
-    lName: reqBody.lName,
-    website: returnRootDomain(reqBody.website)
+let newContactId
+try {
+//Create new contact in DB. Not aware of valid email status yet.
+  const newContact = await pool.query("INSERT INTO contact (first_name, last_name, website) VALUES($1, $2, $3) RETURNING id", [fName, lName, website])
+  newContactId = newContact.rows[0].id
+
+} catch (error) {
+  return res.status(400).json({"success": false, "message": "Error creating contact"});
+}
+
+
+
+//THIS NEEDS TO GO LATER IN THE CODE.... THE EMAIL IF VALID PLUS CATCHALLSTATUS
+
+
+console.log("UPDATED CONTACT:::::::")
+
+  const contactData: contactI = {
+    fName,
+    lName,
+    website: returnRootDomain(website)
   };
 
 
-  //******CREATE THE CONTACT HERE.... ASYNC
 
   
   const emailArray = createPotentialEmailMatchesArray(contactData);
@@ -56,7 +92,7 @@ export const addContact = async (req: Request, res: Response) => {
     const checkEmail = async (email: string) => {
       const validEmailCheckData = await checkEmailValidity(email);
 
-      if (validEmailCheckData?.data.result === "valid") {
+      if (validEmailCheckData?.data.result === "valid" || validEmailCheckData?.data.result === "catchall") {
         return validEmailCheckData;
       }
     };
@@ -66,11 +102,18 @@ export const addContact = async (req: Request, res: Response) => {
     //console.log(data);
     
 //refactor this to include CATCH ALL.
-    if (validEmail?.data.result === "valid") {
+    if (validEmail?.data.result === "valid" || validEmail?.data.result === "catchall") {
       //****** SET THE GLOBAL VARIABLE TO ENSURE THIS GETS PASSED IN THE RESPONSE.
       //RETURN CONTACT WITH EMAIL
       console.log(validEmail)
       validEmailData = validEmail
+      try {
+ 
+        await pool.query(`UPDATE contact SET email = '${validEmailData.data.email}', emailStatus = '${validEmailData.data.result}' WHERE id = ${newContactId}`)
+        
+      } catch (error) {
+          return res.status(400).json({"success": false, "message": "Error updating contact"});
+        }
       break;
     }
   }
@@ -79,14 +122,12 @@ export const addContact = async (req: Request, res: Response) => {
 
 
 if(validEmailData){
-  //update the contact
-  //return valid email res + 
-  console.log("VALID EMAIL EXISTS...")
-  return validEmailData
+  return res.status(200).json({"success": true, "emailFound": true, "message": "New contact created. Email was found." });
+
+
 } else {
-// RETURN CONTACT WITH NO EMAIL
-console.log("No valid email found")
-return "noValidEmail"
+  return res.status(200).json({"success": true, "emailFound": false, "message": "No email found. Contact was created!" });
+
 
 }
 
