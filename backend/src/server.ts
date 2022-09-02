@@ -18,17 +18,9 @@ const port = process.env.PORT || 5001;
 app.use("/api/v1/contacts", contactsRoute);
 
  app.post("/test", async (req, res) => {
-
-        try {
-            const {fName, lName, website} = req.body
-
-            const newContact = await pool.query("INSERT INTO contact (first_name, last_name, website) VALUES($1, $2, $3)", [fName, lName, website])
-      res.json(newContact)
-        
-        
-        } catch (error) {
-            console.log(error)
-        }
+console.log(req.body)
+        console.log("TESDT API HIT...")
+        console.log(req.body.content[0])
 
 }) 
 
