@@ -1,23 +1,35 @@
 import React, { useState } from "react";
 import { LeadFinderForm } from "../components/LeadFinderForm";
-import { ActivitySidebarFeed } from "../components/ActivitySidebarFeed";
+
+interface arrayOfValuesI {
+  name: string;
+  emailFound: boolean;
+}
 
 export const Home = () => {
-  const [arrayOfValues, setArrayOfValues] = useState([
-    { name: "", status: "" },
-  ]);
+  const [arrayOfValues, setArrayOfValues] = useState<arrayOfValuesI[]>([]);
 
   const handleSubmit = (
     firstName: string,
     lastName: string,
-    website: string
+    website: string,
+    email: string,
+    emailFound: boolean
   ) => {
-    console.log("PUSH ITEM TRIGGERED");
+    console.log("PUSH ITEM ");
 
-    setArrayOfValues([
-      ...arrayOfValues,
-      { name: firstName, status: "not checked" },
-    ]);
+    /* const updatedArray = arrayOfValues;
+    console.log(updatedArray);
+
+    updatedArray.unshift({ name: firstName, emailFound });
+
+    console.log(updatedArray);
+
+    setArrayOfValues(updatedArray);
+    console.log("STATE...");
+    console.log(arrayOfValues); */
+
+    setArrayOfValues([...arrayOfValues, { name: firstName, emailFound }]);
   };
   return (
     <div className="pageContainer">
@@ -25,9 +37,6 @@ export const Home = () => {
       <div className="flex gap-5">
         <div className="pageContainer">
           <LeadFinderForm submitHandler={handleSubmit} />
-        </div>
-        <div className="pageContainer w-[350px]">
-          <ActivitySidebarFeed arrayOfValues={arrayOfValues} />
         </div>
       </div>
     </div>

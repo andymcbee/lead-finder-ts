@@ -1,8 +1,15 @@
 import React, { useState } from "react";
+import { checkValidEmail } from "../services/checkValidEmail";
 
 interface PropsI {
   //handleSubmit: React.ReactNode | React.ReactNode[];
-  submitHandler: (firstName: string, lastName: string, website: string) => void;
+  submitHandler: (
+    firstName: string,
+    lastName: string,
+    website: string,
+    email: string,
+    emailFound: boolean
+  ) => void;
 }
 
 export const LeadFinderForm = ({ submitHandler }: PropsI) => {
@@ -65,7 +72,29 @@ export const LeadFinderForm = ({ submitHandler }: PropsI) => {
             <button
               type="submit"
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={() => submitHandler(firstName, lastName, website)}
+              onClick={async () => {
+                //submitHandler(firstName, lastName, website);
+                console.log("THIS SHOULD FIRE FIRST...");
+
+                const emailData = await checkValidEmail({
+                  firstName: firstName,
+                  lastName: lastName,
+                  website: website,
+                });
+
+                console.log("EMAIL DATA::::");
+                console.log(emailData);
+
+                const email = emailData.email;
+                const emailFound = emailData.emailFound;
+                console.log("STATUS::::");
+                console.log(emailFound);
+
+                submitHandler(firstName, lastName, website, email, emailFound);
+
+                console.log("THIS SHOULD FIRE THIRD");
+                console.log(emailData);
+              }}
             >
               Submit
             </button>
