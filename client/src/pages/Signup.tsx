@@ -1,16 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { register, reset } from "../redux/auth/authSlice";
 
 export const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const dispatch = useDispatch<any>();
+  const navigate = useNavigate();
+
+  interface stateI {
+    state: any;
+    auth: any;
+  }
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: stateI) => state.auth
+  );
+  console.log("REDUX STATES IN SIGN UP PAGE::::");
+  console.log(isLoading);
+
+  useEffect(() => {
+    console.log("REDUX STATES IN USE EFFECT::::");
+    console.log(isLoading);
+    console.log(user);
+
+    /*  if (isError) {
+      toast.error(message)
+    } */
+
+    if (isSuccess || user) {
+      navigate("/");
+    }
+
+    dispatch(reset());
+  }, [user, isError, isSuccess, message, dispatch]);
+
   const handleSignup = (
     email: string,
     password: string,
     confirmPassword: string
   ) => {
-    console.log("handle signup clicked");
+    const data = {
+      data: {
+        email,
+        password,
+        confirmPassword,
+      },
+    };
+
+    console.log(data);
+
+    dispatch(register(data));
   };
 
   return (
@@ -82,7 +125,13 @@ export const Signup = () => {
                 onClick={async () => {
                   console.log("TEST WORKING");
 
-                  await handleSignup(email, password, confirmPassword);
+                  const userData = await handleSignup(
+                    email,
+                    password,
+                    confirmPassword
+                  );
+
+                  console.log(userData);
                 }}
               >
                 Submit

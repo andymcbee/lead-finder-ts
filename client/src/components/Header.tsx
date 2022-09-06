@@ -1,53 +1,75 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { logout, reset } from "../redux/auth/authSlice";
+
+interface stateI {
+  state: any;
+  auth: any;
+}
 
 export const Header = () => {
+  const dispatch = useDispatch<any>();
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: stateI) => state.auth
+  );
+
+  useEffect(() => {
+    console.log("USE EFFECT TRIGGERED.... IN HEADER COMPONENT...");
+    console.log(user);
+  }, [user]);
+
+  const handleLogout = () => {
+    console.log("LOG OUT CLICKED");
+    dispatch(logout());
+
+    reset();
+  };
+
   return (
-    <nav className="flex items-center justify-between bg-teal-500 p-6">
-      <div className="flex items-center flex-shrink-0 text-white mr-6">
-        <svg
-          className="fill-current h-8 w-8 mr-2"
-          width="54"
-          height="54"
-          viewBox="0 0 54 54"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M13.5 22.1c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05zM0 38.3c1.8-7.2 6.3-10.8 13.5-10.8 10.8 0 12.15 8.1 17.55 9.45 3.6.9 6.75-.45 9.45-4.05-1.8 7.2-6.3 10.8-13.5 10.8-10.8 0-12.15-8.1-17.55-9.45-3.6-.9-6.75.45-9.45 4.05z" />
-        </svg>
+    <nav className="flex justify-between bg-teal-500 p-6 border-solid border-2 border-blue-600">
+      <div className="flex items-center flex-shrink-0 text-white mr-6 border-solid border-2 border-blue-600">
         <span className="font-semibold text-xl tracking-tight">
-          Tailwind CSS
+          Lead Finder App
         </span>
       </div>
-
-      <div className="w-full block flex-grow flex items-center w-auto">
-        <div className="text-sm flex-grow">
-          <a
-            href="#responsive-header"
-            className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
-          >
-            Docs
-          </a>
-          <a
-            href="#responsive-header"
-            className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
-          >
-            Examples
-          </a>
-          <a
-            href="#responsive-header"
-            className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white"
-          >
-            Blog
-          </a>
+      {user && (
+        <div className="flex items-center w-auto border-solid border-2 border-blue-600">
+          <div className="text-sm flex-grow">
+            <a
+              href="#responsive-header"
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Dashboard
+            </a>
+            <a
+              href="#responsive-header"
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </a>
+          </div>
         </div>
-        <div>
-          <a
-            href="#"
-            className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
-          >
-            Download
-          </a>
+      )}
+      {!user && (
+        <div className="flex items-center w-auto border-solid border-2 border-blue-600">
+          <div className="text-sm flex-grow">
+            <a
+              href="#responsive-header"
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Login
+            </a>
+            <a
+              href="#responsive-header"
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+            >
+              Signup
+            </a>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 };
