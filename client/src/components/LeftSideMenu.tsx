@@ -9,8 +9,12 @@ export const LeftSideMenu = () => {
     >
       <div className="overflow-y-auto py-4 px-3 bg-gray-50 rounded h-full">
         <div className="flex flex-col gap-2 p-2">
-          <Link to="/contacts">Contacts</Link>
-          <Link to="/">Lead Finder</Link>
+          <Link className="text-xl hover:text-slate-700" to="/">
+            Lead Finder
+          </Link>
+          <Link className="text-xl hover:text-slate-700" to="/contacts">
+            Contacts
+          </Link>
         </div>
       </div>
     </aside>

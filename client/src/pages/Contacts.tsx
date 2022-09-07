@@ -1,6 +1,7 @@
 import react, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getContacts, reset } from "../redux/contacts/contactsSlice";
+import { CSVLink } from "react-csv";
 
 export const Contacts = () => {
   //fetch data, store it in state onpage NOT GLOBAL
@@ -23,8 +24,9 @@ export const Contacts = () => {
 
   const tableRows = contacts.map((item: any) => {
     console.log(item);
+
     return (
-      <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+      <tr className="bg-white border-b">
         <th
           scope="row"
           className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -49,15 +51,27 @@ export const Contacts = () => {
   console.log("CONTACTS:::::::::;");
   console.log(contacts);
 
+  const handleDownload = () => {
+    console.log("Clicked");
+    console.log(contacts);
+  };
+
   return (
     <div className="pageContainer">
       <div className="pageTitle">Contacts</div>
 
       <div className="flex gap-5">
         <div className="pageContainer">
-          <div className="overflow-x-auto relative">
-            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          {/*   */}
+          <button
+            type="submit"
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+          >
+            <CSVLink data={contacts}>Download Data</CSVLink>
+          </button>
+          <div className="overflow-x-auto mt-5">
+            <table className="w-full text-sm text-left text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                 <tr>
                   <th scope="col" className="py-3 px-6">
                     Name
