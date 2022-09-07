@@ -8,6 +8,7 @@ interface reqBodyI {
   fName: string;
   lName: string;
   website: string;
+  accountId: string;
 }
 
 interface emailDataI {
@@ -28,7 +29,7 @@ interface contactI {
 }
 
 export const addContact = async (req: Request, res: Response) => {
-  const { fName, lName, website }: reqBodyI = req.body.data;
+  const { fName, lName, website, accountId }: reqBodyI = req.body.data;
   console.log("BACKEND REQ.BODY:::::::");
   console.log(req.body);
 
@@ -54,16 +55,17 @@ export const addContact = async (req: Request, res: Response) => {
   try {
     //Create new contact in DB. Not aware of valid email status yet.
     const newContact = await pool.query(
-      "INSERT INTO contact (first_name, last_name, website) VALUES($1, $2, $3) RETURNING id",
-      [fName, lName, website]
+      "INSERT INTO contacts (first_name, last_name, website, parentaccountid) VALUES($1, $2, $3, $4) RETURNING id",
+      [fName, lName, website, accountId]
     );
     newContactId = newContact.rows[0].id;
     console.log("NEW CONTACT ID::::");
     console.log(newContactId);
   } catch (error) {
+    console.log(error)
     return res
       .status(400)
-      .json({ success: false, message: "Error creating contact" });
+      .json({ success: false, message: "Error creating contact id: 3228" });
   }
 
   const contactData: contactI = {
@@ -106,7 +108,7 @@ export const addContact = async (req: Request, res: Response) => {
       validEmailData = validEmail;
       try {
         await pool.query(
-          `UPDATE contact SET email = '${validEmailData.data.email}', emailStatus = '${validEmailData.data.result}' WHERE id = ${newContactId}`
+          `UPDATE contacts SET email = '${validEmailData.data.email}', emailStatus = '${validEmailData.data.result}' WHERE id = ${newContactId}`
         );
       } catch (error) {
         return res
@@ -137,7 +139,49 @@ export const addContact = async (req: Request, res: Response) => {
       });
   }
 };
-
 export const getContacts = async (req: Request, res: Response) => {
-  console.log("GET ALL CONTACTS");
+
+  const accId: string = req.params.accountId
+
+
+  let contacts: string[]
+  try {
+    const data = await pool.query("SELECT * FROM contacts WHERE parentaccountid = $1", [accId])
+
+    contacts = data.rows
+
+    console.log(contacts)
+    return res
+      .status(200)
+      .json({
+        success: true,
+        message: "ok",
+        data: { contacts }
+      });
+  } catch (error) {
+    console.log(error)
+    return res
+      .status(400)
+      .json({ success: false, message: "Error fetching contacts" });
+  }
+
+
+  /* 
+    //fetch all contacts
+  
+    //    const existingUser = await pool.query("SELECT * FROM appusers WHERE email = $1", [email])
+  
+  
+    const contacts = await pool.query("SELECT * FROM appusers")
+    console.log(contacts)
+  
+  
+  
+  
+  
+  
+  
+    // check that accId exists, if not --> return error stating "accId doesn't exist"
+  
+    // */
 };

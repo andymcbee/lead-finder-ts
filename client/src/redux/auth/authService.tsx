@@ -1,5 +1,4 @@
-import React from "react";
-import axios from "axios";
+import { API } from "../../api/index";
 
 //register user
 
@@ -12,10 +11,7 @@ interface userDataI {
 }
 
 const register = async (userData: userDataI) => {
-  const response = await axios.post(
-    "http://localhost:5000/api/v1/users/signup",
-    userData
-  );
+  const response = await API.post("/api/v1/users/signup", userData);
 
   if (response.data.token) {
     console.log("IF STATEMENT FIRED IN AUTH SERVICE...");
@@ -35,10 +31,7 @@ const register = async (userData: userDataI) => {
 };
 
 const login = async (userData: userDataI) => {
-  const response = await axios.post(
-    "http://localhost:5000/api/v1/users/signin",
-    userData
-  );
+  const response = await API.post("/api/v1/users/signin", userData);
 
   if (response.data.token) {
     console.log("IF STATEMENT FIRED IN AUTH SERVICE...");

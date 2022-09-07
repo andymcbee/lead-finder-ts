@@ -1,5 +1,7 @@
+import userEvent from "@testing-library/user-event";
 import React, { useState } from "react";
 import { checkValidEmail } from "../services/checkValidEmail";
+import { useSelector } from "react-redux";
 
 interface PropsI {
   //handleSubmit: React.ReactNode | React.ReactNode[];
@@ -16,6 +18,15 @@ export const LeadFinderForm = ({ submitHandler }: PropsI) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [website, setWebsite] = useState("");
+
+  interface stateI {
+    state: any;
+    auth: any;
+  }
+
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
+    (state: stateI) => state.auth
+  );
 
   return (
     <div className="">
@@ -80,6 +91,7 @@ export const LeadFinderForm = ({ submitHandler }: PropsI) => {
                   firstName: firstName,
                   lastName: lastName,
                   website: website,
+                  accountId: user.accountId,
                 });
 
                 console.log("EMAIL DATA::::");

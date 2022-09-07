@@ -8,15 +8,15 @@ import { env } from 'process';
 
 
 
-interface userInfo {
-    email: string
-    password: string
-    confirmPassword: string
-}
-
 
 export const signup = async (req: Request, res: Response) => {
 
+
+    interface userInfo {
+        email: string
+        password: string
+        confirmPassword: string
+    }
 
 
 
@@ -114,6 +114,14 @@ export const signup = async (req: Request, res: Response) => {
 
 
 export const signin = async (req: Request, res: Response) => {
+
+
+    interface userInfo {
+        email: string
+        password: string
+        confirmPassword: string
+    }
+
 
     const { email, password, confirmPassword }: userInfo = req.body.data
 

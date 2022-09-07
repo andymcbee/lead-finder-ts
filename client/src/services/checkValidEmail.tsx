@@ -1,35 +1,28 @@
-import React from "react";
-import axios from "axios";
+import { API } from "../api/index";
 
 interface PropsI {
   firstName: string;
   lastName: string;
   website: string;
+  accountId: string;
 }
 
 export const checkValidEmail = async ({
   firstName,
   lastName,
   website,
+  accountId,
 }: PropsI) => {
-  console.log("DATA IN ASYNC CALL, FROM PROPS...");
-  console.log(firstName);
-  console.log(lastName);
+  const data = await API.post("/api/v1/contacts/create", {
+    data: {
+      fName: firstName,
+      lName: lastName,
+      website,
+      accountId,
+    },
+  });
+  console.log("THIS IS THE DATA FROM THE SERVICE POST REQ::::::");
+  console.log(data);
 
-  console.log(website);
-
-  const data = await axios.post(
-    "http://localhost:5000/api/v1/contacts/create",
-    {
-      data: {
-        fName: firstName,
-        lName: lastName,
-        website,
-      },
-    }
-  );
-  console.log("THIS SHOULD FIRE SECOND");
-  /*   console.log("TESTING... THIS IS THE CONSOLE LOG IN THE SERVICE...");
-  console.log(data.data); */
   return data.data;
 };

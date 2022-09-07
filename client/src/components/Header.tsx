@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout, reset } from "../redux/auth/authSlice";
+import { Link } from "react-router-dom";
 
 interface stateI {
   state: any;
@@ -36,37 +37,50 @@ export const Header = () => {
       {user && (
         <div className="flex items-center w-auto border-solid border-2 border-blue-600">
           <div className="text-sm flex-grow">
-            <a
+            {/*      <a
               href="#responsive-header"
               className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
             >
               Dashboard
-            </a>
-            <a
+            </a> */}
+            <Link
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+              to="/"
+            >
+              Dashboard
+            </Link>
+            {/*  <a
               href="#responsive-header"
               className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
               onClick={() => handleLogout()}
             >
               Logout
-            </a>
+            </a> */}
+            <Link
+              className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+              to="/"
+              onClick={() => handleLogout()}
+            >
+              Logout
+            </Link>
           </div>
         </div>
       )}
       {!user && (
         <div className="flex items-center w-auto border-solid border-2 border-blue-600">
           <div className="text-sm flex-grow">
-            <a
-              href="#responsive-header"
+            <Link
               className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+              to="/login"
             >
               Login
-            </a>
-            <a
-              href="#responsive-header"
+            </Link>
+            <Link
               className="block mt-4 inline-block mt-0 text-teal-200 hover:text-white mr-4"
+              to="/signup"
             >
-              Signup
-            </a>
+              Sign Up
+            </Link>
           </div>
         </div>
       )}
